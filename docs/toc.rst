@@ -39,6 +39,7 @@ Table of Contents
     gas_price
     ens
     constants
+    types
 
 .. toctree::
     :maxdepth: 1
