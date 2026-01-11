@@ -294,17 +294,34 @@ Transaction Types
 
 .. py:class:: SignedTx
 
-    Signed transaction data returned by ``w3.eth.account.sign_transaction()``.
+    TypedDict representing signed transaction data structure.
     All fields are optional (``total=False``).
+
+    .. note::
+
+        ``w3.eth.account.sign_transaction()`` returns an ``eth_account.SignedTransaction``
+        **object** (not a ``SignedTx`` dict). Use the object's attributes:
+
+        .. code-block:: python
+
+            >>> signed = w3.eth.account.sign_transaction(tx_params, private_key)
+            >>> signed.raw_transaction  # bytes - RLP encoded transaction
+            b'\x02\xf8...'
+            >>> signed.hash  # HexBytes - transaction hash
+            HexBytes('0xabc123...')
+            >>> w3.eth.send_raw_transaction(signed.raw_transaction)
+
+        The ``SignedTx`` TypedDict is provided for type annotations in contexts
+        where signed transaction data is represented as a dictionary.
 
     .. code-block:: python
 
         >>> from web3.types import SignedTx, TxParams
-        >>> tx_params: TxParams = {"to": "0x...", "value": 1000, "gas": 21000}
-        >>> signed: SignedTx = w3.eth.account.sign_transaction(tx_params, private_key)
-        >>> signed["raw"]
-        b'\xf8...'  # RLP encoded transaction
-        >>> w3.eth.send_raw_transaction(signed["raw"])
+        >>> # Creating a SignedTx dict manually:
+        >>> signed_tx: SignedTx = {
+        ...     "raw": b'\xf8...',
+        ...     "tx": {"to": "0x...", "value": 1000},
+        ... }
 
     **Fields:**
 
@@ -982,7 +999,7 @@ The following types are available in ``web3.types``:
   ``BlockData``, ``Uncle``, ``WithdrawalData``, ``BlockIdentifier``, ``BlockParams``
 
 **Transactions:**
-  ``TxData``, ``TxParams``, ``TxReceipt``, ``SignedTx``, ``PendingTx``
+  ``TxData``, ``TxParams``, ``TxReceipt``, ``SignedTx``, ``PendingTx``, ``BlockReceipts``
 
 **Events & Logs:**
   ``EventData``, ``LogReceipt``, ``FilterParams``, ``LogsSubscriptionArg``
@@ -1015,9 +1032,10 @@ The following types are available in ``web3.types``:
 
 **Subscriptions:**
   ``SubscriptionType``, ``SubscriptionResponse``, ``EthSubscriptionParams``,
-  ``FormattedEthSubscriptionResponse``, ``LogsSubscriptionArg``,
+  ``EthSubscriptionResult``, ``FormattedEthSubscriptionResponse``, ``LogsSubscriptionArg``,
   ``BlockTypeSubscriptionResponse``, ``TransactionTypeSubscriptionResponse``,
-  ``LogsSubscriptionResponse``, ``SyncingSubscriptionResponse``
+  ``LogsSubscriptionResponse``, ``SyncingSubscriptionResponse``,
+  ``GethSyncingSubscriptionResponse``
 
 **Geth-specific:**
   ``GethWallet``, ``GethSyncingStatus``, ``GethSyncingSubscriptionResult``
@@ -1034,5 +1052,5 @@ The following types are available in ``web3.types``:
 
 **Aliases:**
   ``Wei``, ``Gwei``, ``Nonce``, ``Timestamp``, ``ENS``, ``EnodeURI``,
-  ``BlockIdentifier``, ``BlockParams``, ``LatestBlockParam``, ``AccessList``,
-  ``BlockTrace``, ``FilterTrace``, ``TraceMode``
+  ``RPCEndpoint``, ``BlockIdentifier``, ``BlockParams``, ``LatestBlockParam``,
+  ``AccessList``, ``BlockTrace``, ``FilterTrace``, ``TraceMode``
